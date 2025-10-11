@@ -12,6 +12,8 @@ jobs:
   build-package:
     name: Create Package Version
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
       package_version_id: ${{ steps.create_version.outputs.package_version_id }}
       version_number: ${{ steps.create_version.outputs.version_number }}
@@ -61,7 +63,7 @@ jobs:
           fi
           
           package_version_id=$(echo "$result" | jq -r '.result.SubscriberPackageVersionId')
-          version_number=$(echo "$result" | jq -r '.result.Version')
+          version_number=$(echo "$result" | jq -r '.result.VersionNumber')
           
           echo "package_version_id=$package_version_id" >> $GITHUB_OUTPUT
           echo "version_number=$version_number" >> $GITHUB_OUTPUT

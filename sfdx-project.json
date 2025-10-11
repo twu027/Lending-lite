@@ -1,12 +1,12 @@
 {
   "packageDirectories": [
     {
-      "versionName": "ver 0.2",
-      "versionNumber": "0.2.0.NEXT",
+      "versionName": "ver 0.3",
+      "versionNumber": "0.3.0.NEXT",
       "path": "force-app",
       "default": true,
       "package": "LendingLite",
-      "versionDescription": "Code refactoring and CI/CD improvements"
+      "versionDescription": "Fix package release workflow - correct version extraction and permissions"
     }
   ],
   "name": "Lending-lite",
