@@ -5,6 +5,8 @@
  */
 public with sharing class LoanApplicationController {
     
+    public class LoanApplicationException extends Exception {}
+    
     /**
      * @description Get loan applications for the workbench
      * @return List of Loan Application records with related data
@@ -20,7 +22,7 @@ public with sharing class LoanApplicationController {
                 LIMIT 50
             ];
         } catch (Exception e) {
-            throw new AuraHandledException('Failed to retrieve loan applications: ' + e.getMessage());
+            throw new LoanApplicationException('Failed to retrieve loan applications: ' + e.getMessage());
         }
     }
     
@@ -34,7 +36,7 @@ public with sharing class LoanApplicationController {
         try {
             // Validate input
             if (applicationId == null) {
-                throw new AuraHandledException('Application ID is required');
+                throw new LoanApplicationException('Application ID is required');
             }
             
             // Get the current application
@@ -47,20 +49,20 @@ public with sharing class LoanApplicationController {
             
             // Validate that application can be submitted
             if (app.Status__c != 'Draft') {
-                throw new AuraHandledException('Only Draft applications can be submitted');
+                throw new LoanApplicationException('Only Draft applications can be submitted');
             }
             
             // Validate required fields
             if (app.Amount__c == null || app.Amount__c <= 0) {
-                throw new AuraHandledException('Loan amount is required and must be greater than 0');
+                throw new LoanApplicationException('Loan amount is required and must be greater than 0');
             }
             
             if (String.isBlank(app.Purpose__c)) {
-                throw new AuraHandledException('Loan purpose is required');
+                throw new LoanApplicationException('Loan purpose is required');
             }
             
             if (app.Primary_Borrower__c == null) {
-                throw new AuraHandledException('Primary borrower is required');
+                throw new LoanApplicationException('Primary borrower is required');
             }
             
             // Update status to Submitted - this will trigger our service logic
@@ -70,11 +72,13 @@ public with sharing class LoanApplicationController {
             return app;
             
         } catch (QueryException e) {
-            throw new AuraHandledException('Loan application not found');
+            throw new LoanApplicationException('Loan application not found');
         } catch (DmlException e) {
-            throw new AuraHandledException('Failed to submit application: ' + e.getMessage());
+            throw new LoanApplicationException('Failed to submit application: ' + e.getMessage());
+        } catch (LoanApplicationException e) {
+            throw e;
         } catch (Exception e) {
-            throw new AuraHandledException('Unexpected error: ' + e.getMessage());
+            throw new LoanApplicationException('Unexpected error: ' + e.getMessage());
         }
     }
     
@@ -90,15 +94,15 @@ public with sharing class LoanApplicationController {
         try {
             // Validate inputs
             if (amount == null || amount <= 0) {
-                throw new AuraHandledException('Loan amount is required and must be greater than 0');
+                throw new LoanApplicationException('Loan amount is required and must be greater than 0');
             }
             
             if (String.isBlank(purpose)) {
-                throw new AuraHandledException('Loan purpose is required');
+                throw new LoanApplicationException('Loan purpose is required');
             }
             
             if (primaryBorrowerId == null) {
-                throw new AuraHandledException('Primary borrower is required');
+                throw new LoanApplicationException('Primary borrower is required');
             }
             
             // Create new application
@@ -121,9 +125,11 @@ public with sharing class LoanApplicationController {
             ];
             
         } catch (DmlException e) {
-            throw new AuraHandledException('Failed to create application: ' + e.getMessage());
+            throw new LoanApplicationException('Failed to create application: ' + e.getMessage());
+        } catch (LoanApplicationException e) {
+            throw e;
         } catch (Exception e) {
-            throw new AuraHandledException('Unexpected error: ' + e.getMessage());
+            throw new LoanApplicationException('Unexpected error: ' + e.getMessage());
         }
     }
 }

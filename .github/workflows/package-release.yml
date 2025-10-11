@@ -1,0 +1,99 @@
+name: Build and Release Package
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'force-app/**'
+      - 'sfdx-project.json'
+
+jobs:
+  build-package:
+    name: Create Package Version
+    runs-on: ubuntu-latest
+    outputs:
+      package_version_id: ${{ steps.create_version.outputs.package_version_id }}
+      version_number: ${{ steps.create_version.outputs.version_number }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Salesforce CLI
+        run: |
+          npm install -g @salesforce/cli
+          sf version
+      
+      - name: Authenticate to Dev Hub
+        run: |
+          echo "${{ secrets.DEVHUB_SFDX_URL }}" > ./DEVHUB_SFDX_URL.txt
+          sf org login sfdx-url --sfdx-url-file ./DEVHUB_SFDX_URL.txt --alias DevHub --set-default-dev-hub
+          rm ./DEVHUB_SFDX_URL.txt
+      
+      - name: Create Package Version
+        id: create_version
+        run: |
+          # Create package version
+          echo "🔨 Creating package version..."
+          result=$(sf package version create \
+            --package LendingLite \
+            --installation-key-bypass \
+            --wait 15 \
+            --code-coverage \
+            --json)
+          
+          # Extract package version ID
+          package_version_id=$(echo $result | jq -r '.result.SubscriberPackageVersionId')
+          version_number=$(echo $result | jq -r '.result.Version')
+          
+          echo "package_version_id=$package_version_id" >> $GITHUB_OUTPUT
+          echo "version_number=$version_number" >> $GITHUB_OUTPUT
+          
+          echo "✅ Package Version Created: $package_version_id"
+          echo "📦 Version Number: $version_number"
+      
+      - name: Promote Package Version
+        run: |
+          echo "🚀 Promoting package version ${{ steps.create_version.outputs.package_version_id }}..."
+          sf package version promote \
+            --package ${{ steps.create_version.outputs.package_version_id }} \
+            --no-prompt
+          echo "✅ Package version promoted to released status"
+      
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.create_version.outputs.version_number }}
+          release_name: Release v${{ steps.create_version.outputs.version_number }}
+          body: |
+            ## 📦 Salesforce Package Release
+            
+            **Package Version ID**: `${{ steps.create_version.outputs.package_version_id }}`
+            
+            **Version**: ${{ steps.create_version.outputs.version_number }}
+            
+            ### 🔗 Installation
+            
+            Install this package using:
+            ```bash
+            sf package install --package ${{ steps.create_version.outputs.package_version_id }} --wait 10 --target-org YOUR_ORG_ALIAS
+            ```
+            
+            Or use the browser installation URL:
+            ```
+            https://login.salesforce.com/packaging/installPackage.apexp?p0=${{ steps.create_version.outputs.package_version_id }}
+            ```
+            
+            ### ✅ Status
+            - Package created and promoted to **Released**
+            - Ready for production deployment
+          draft: false
+          prerelease: false

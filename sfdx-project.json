@@ -1,12 +1,21 @@
 {
   "packageDirectories": [
     {
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
       "path": "force-app",
-      "default": true
+      "default": true,
+      "package": "LendingLite",
+      "versionDescription": "Lending application demo with credit risk assessment"
     }
   ],
   "name": "Lending-lite",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "64.0"
+  "sourceApiVersion": "64.0",
+  "packageAliases": {
+    "LendingLite": "0HoNS0000000mnp0AA",
+    "LendingLite@0.1.0-1": "04tNS000000CTmDYAW",
+    "LendingLite@0.1.0-2": "04tNS000000CTnpYAG"
+  }
 }

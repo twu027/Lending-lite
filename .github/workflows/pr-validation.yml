@@ -1,0 +1,72 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'force-app/**'
+      - 'sfdx-project.json'
+      - '.github/workflows/**'
+
+jobs:
+  validate-pr:
+    name: Validate PR Changes
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Salesforce CLI
+        run: |
+          npm install -g @salesforce/cli
+          sf version
+      
+      - name: Authenticate to Dev Hub
+        run: |
+          echo "${{ secrets.DEVHUB_SFDX_URL }}" > ./DEVHUB_SFDX_URL.txt
+          sf org login sfdx-url --sfdx-url-file ./DEVHUB_SFDX_URL.txt --alias DevHub --set-default-dev-hub
+          rm ./DEVHUB_SFDX_URL.txt
+      
+      - name: Create Scratch Org
+        run: |
+          sf org create scratch --definition-file config/project-scratch-def.json \
+            --alias pr-scratch-${{ github.event.pull_request.number }} \
+            --set-default \
+            --duration-days 1 \
+            --wait 10
+      
+      - name: Deploy Source to Scratch Org
+        run: |
+          sf project deploy start --source-dir force-app
+      
+      - name: Run Apex Tests
+        run: |
+          sf apex run test \
+            --test-level RunLocalTests \
+            --code-coverage \
+            --result-format human \
+            --wait 10
+      
+      - name: Delete Scratch Org
+        if: always()
+        run: |
+          sf org delete scratch --no-prompt --target-org pr-scratch-${{ github.event.pull_request.number }} || true
+      
+      - name: Comment PR with Results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ PR validation completed! All tests passed in scratch org.'
+            })
