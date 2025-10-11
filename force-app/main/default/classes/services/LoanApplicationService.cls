@@ -12,12 +12,7 @@ public with sharing class LoanApplicationService implements ILoanApplicationServ
     public void processNewLoanApplications(List<Loan_Application__c> loanApplications) {
         // Validate required fields
         validateLoanApplications(loanApplications);
-        
-        // Send notifications for new applications
-        sendNewApplicationNotifications(loanApplications);
-        
-        // Create audit trail
-        createAuditTrail(loanApplications, 'Created');
+       
     }
     
     /**
