@@ -80,8 +80,6 @@ global with sharing class CreditScoreRest {
         resp.riskScore = risk;
         resp.id = app.Id;
         
-        System.debug('External callback: Updated application ' + app.Id + ' with status: ' + newStatus + ', risk: ' + risk);
-        
         return resp;
     }
     
@@ -102,7 +100,6 @@ global with sharing class CreditScoreRest {
                 return 'Declined';
             }
             when else {
-                System.debug(LoggingLevel.ERROR, 'Unknown external decision: ' + externalDecision);
                 throw new System.CalloutException('Unknown external decision: ' + externalDecision);
             }
         }

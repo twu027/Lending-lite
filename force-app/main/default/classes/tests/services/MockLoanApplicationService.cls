@@ -20,7 +20,6 @@ public class MockLoanApplicationService implements ILoanApplicationService {
     public void processNewLoanApplications(List<Loan_Application__c> loanApplications) {
         newApplicationCallCount++;
         processedNewApplications.addAll(loanApplications);
-        System.debug('MockLoanApplicationService: Processed ' + loanApplications.size() + ' new applications');
     }
     
     /**
@@ -34,7 +33,6 @@ public class MockLoanApplicationService implements ILoanApplicationService {
         if (oldApplicationMap != null) {
             capturedOldMap.putAll(oldApplicationMap);
         }
-        System.debug('MockLoanApplicationService: Processed ' + statusChangedApplications.size() + ' status changes');
     }
     
     /**

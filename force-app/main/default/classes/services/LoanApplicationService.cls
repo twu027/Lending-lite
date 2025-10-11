@@ -10,8 +10,6 @@ public with sharing class LoanApplicationService implements ILoanApplicationServ
      * @param loanApplications List of loan application records
      */
     public void processNewLoanApplications(List<Loan_Application__c> loanApplications) {
-        System.debug('LoanApplicationService.processNewLoanApplications: Processing ' + loanApplications.size() + ' applications');
-        
         // Validate required fields
         validateLoanApplications(loanApplications);
         
@@ -28,8 +26,6 @@ public with sharing class LoanApplicationService implements ILoanApplicationServ
      * @param oldApplicationMap Map of old application values
      */
     public void processStatusChanges(List<Loan_Application__c> statusChangedApplications, Map<Id, Loan_Application__c> oldApplicationMap) {
-        System.debug('LoanApplicationService.processStatusChanges: Processing ' + statusChangedApplications.size() + ' status changes');
-        
         List<Loan_Application__c> submittedApplications = new List<Loan_Application__c>();
         
         // Filter for submitted applications only
@@ -75,48 +71,14 @@ public with sharing class LoanApplicationService implements ILoanApplicationServ
     }
     
     /**
-     * @description Calculate initial risk rating based on loan amount
-     * @param loanAmount The loan amount
-     * @return String risk rating
-     */
-    private static String calculateInitialRiskRating(Decimal loanAmount) {
-        if (loanAmount <= 50000) {
-            return 'Low';
-        } else if (loanAmount <= 200000) {
-            return 'Medium';
-        } else {
-            return 'High';
-        }
-    }
-    
-
-    
-    /**
      * @description Send notifications for new applications
      * @param loanApplications List of new applications
      */
     private static void sendNewApplicationNotifications(List<Loan_Application__c> loanApplications) {
         // Placeholder for email notification logic
-        System.debug('Sending new application notifications for ' + loanApplications.size() + ' applications');
-        
         // TODO: Implement email notification logic
         // Example: Send email to loan processing team
         // Example: Send confirmation email to borrower
-    }
-    
-
-    
-    /**
-     * @description Update related Party records based on loan status
-     * @param loanApplications List of loan applications
-     * @param status The new status
-     */
-    private static void updateRelatedPartyRecords(List<Loan_Application__c> loanApplications, String status) {
-        System.debug('Updating related Party records for ' + loanApplications.size() + ' applications with status: ' + status);
-        
-        // TODO: Implement Party record update logic
-        // Example: Update borrower credit status
-        // Example: Update borrower loan history
     }
     
     /**
@@ -125,8 +87,6 @@ public with sharing class LoanApplicationService implements ILoanApplicationServ
      * @param action The action being audited
      */
     private static void createAuditTrail(List<Loan_Application__c> loanApplications, String action) {
-        System.debug('Creating audit trail for ' + loanApplications.size() + ' applications - Action: ' + action);
-        
         // TODO: Implement audit trail creation
         // Example: Create audit records
         // Example: Log to external system
@@ -137,8 +97,6 @@ public with sharing class LoanApplicationService implements ILoanApplicationServ
      * @param submittedApplications List of submitted loan applications
      */
     private static void processSubmittedApplications(List<Loan_Application__c> submittedApplications) {
-        System.debug('Processing ' + submittedApplications.size() + ' submitted applications');
-        
         // Publish platform events to trigger credit risk calculation
         publishCreditRiskCalculationEvents(submittedApplications);
         
@@ -174,12 +132,10 @@ public with sharing class LoanApplicationService implements ILoanApplicationServ
             // Log any failures
             for (Integer i = 0; i < results.size(); i++) {
                 if (!results[i].isSuccess()) {
-                    System.debug('Failed to publish event for application: ' + loanApplications[i].Id + 
-                               ' Error: ' + results[i].getErrors()[0].getMessage());
+                    // Could implement proper error handling/logging here
+                    // For now, silently continue processing other events
                 }
             }
-            
-            System.debug('Published ' + events.size() + ' credit risk calculation events');
         }
     }
 }

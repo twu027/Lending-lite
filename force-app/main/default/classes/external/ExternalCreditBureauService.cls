@@ -12,8 +12,6 @@ public class ExternalCreditBureauService {
      * @param requestsJson JSON serialized list of credit assessment requests
      */
     public static void processCreditAssessments(String requestsJson) {
-        System.debug('ExternalCreditBureauService: Enqueuing credit assessment job');
-        
         // Use queueable job instead of @future for better demo experience
         CreditAssessmentJob job = new CreditAssessmentJob(requestsJson);
         System.enqueueJob(job);
@@ -30,12 +28,8 @@ public class ExternalCreditBureauService {
         }
         
         public void execute(QueueableContext context) {
-            System.debug('CreditAssessmentJob: Processing credit assessments from JSON');
-            
             List<CreditAssessmentRequest> creditRequests = 
                 (List<CreditAssessmentRequest>) JSON.deserialize(requestsJson, List<CreditAssessmentRequest>.class);
-            
-            System.debug('Processing ' + creditRequests.size() + ' credit assessments');
             
             for (CreditAssessmentRequest request : creditRequests) {
                 processSingleCreditAssessment(request);
@@ -48,8 +42,6 @@ public class ExternalCreditBureauService {
      * @param request Credit assessment request containing loan data
      */
     private static void processSingleCreditAssessment(CreditAssessmentRequest request) {
-        System.debug('Processing credit assessment for amount: $' + request.loanAmount + ', purpose: ' + request.loanPurpose);
-        
         // Simulate external credit bureau decision process
         CreditDecision decision = performCreditAnalysis(request);
         
@@ -158,8 +150,6 @@ public class ExternalCreditBureauService {
             
             String jsonPayload = JSON.serialize(callbackPayload);
             
-            System.debug('External Credit Bureau: Sending callback with payload: ' + jsonPayload);
-            
             // DEMO MODE: Simulate external callback by directly calling the REST method
             // In real implementation, this would be an HTTP POST from external system
             RestResponse mockResponse = new RestResponse();
@@ -170,16 +160,10 @@ public class ExternalCreditBureauService {
             RestContext.request = mockRequest;
             RestContext.response = mockResponse;
             
-            System.debug('About to call CreditScoreRest.score() with context set');
-            
             // Call the REST endpoint method directly (simulating external callback)
             CreditScoreRest.CreditResponse response = CreditScoreRest.score();
             
-            System.debug('CreditScoreRest.score() returned: ' + JSON.serialize(response));
-            System.debug('Successfully processed simulated credit decision callback for reference: ' + decision.referenceId);
-            
         } catch (Exception e) {
-            System.debug('Error processing simulated callback: ' + e.getMessage());
             // In real scenario, would queue for retry
         }
     }

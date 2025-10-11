@@ -27,8 +27,6 @@ public with sharing class LoanSubmitHandler {
      * @param newRecords List of newly inserted Loan Application records
      */
     private static void handleAfterInsert(List<Loan_Application__c> newRecords) {
-        System.debug('LoanSubmitHandler.handleAfterInsert: Processing ' + newRecords.size() + ' new loan applications');
-        
         // Delegate to service layer for business logic using factory pattern
         ILoanApplicationService service = ServiceFactory.getLoanApplicationService();
         service.processNewLoanApplications(newRecords);
@@ -40,8 +38,6 @@ public with sharing class LoanSubmitHandler {
      * @param oldMap Map of old Loan Application record values
      */
     private static void handleAfterUpdate(List<Loan_Application__c> newRecords, Map<Id, Loan_Application__c> oldMap) {
-        System.debug('LoanSubmitHandler.handleAfterUpdate: Processing ' + newRecords.size() + ' updated loan applications');
-        
         List<Loan_Application__c> statusChangedRecords = new List<Loan_Application__c>();
         
         // Check for status changes
@@ -50,9 +46,6 @@ public with sharing class LoanSubmitHandler {
             
             if (loanApp.Status__c != oldRecord.Status__c) {
                 statusChangedRecords.add(loanApp);
-                System.debug('Loan Application status changed: ' + loanApp.Id + 
-                           ' - Old Status: ' + oldRecord.Status__c + 
-                           ' - New Status: ' + loanApp.Status__c);
             }
         }
         

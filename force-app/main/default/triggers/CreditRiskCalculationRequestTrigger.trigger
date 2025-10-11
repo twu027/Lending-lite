@@ -5,9 +5,6 @@
  * @date 2025-10-11
  */
 trigger CreditRiskCalculationRequestTrigger on Credit_Risk_Calculation_Request__e (after insert) {
-    
-    System.debug('CreditRiskCalculationRequestTrigger: Processing ' + Trigger.new.size() + ' events');
-    
     // Build credit assessment requests for external bureau
     List<ExternalCreditBureauService.CreditAssessmentRequest> creditRequests = 
         new List<ExternalCreditBureauService.CreditAssessmentRequest>();
