@@ -38,7 +38,9 @@ jobs:
       
       - name: Create Package Version
         id: create_version
+        shell: bash
         run: |
+          set +e
           echo "Creating package version..."
           
           result=$(sf package version create \
