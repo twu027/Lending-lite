@@ -39,32 +39,41 @@ jobs:
       - name: Create Package Version
         id: create_version
         run: |
-          # Create package version
-          echo "🔨 Creating package version..."
+          echo "Creating package version..."
+          
           result=$(sf package version create \
             --package LendingLite \
             --installation-key-bypass \
             --wait 15 \
             --code-coverage \
-            --json)
+            --json 2>&1)
           
-          # Extract package version ID
-          package_version_id=$(echo $result | jq -r '.result.SubscriberPackageVersionId')
-          version_number=$(echo $result | jq -r '.result.Version')
+          exit_code=$?
+          
+          echo "$result"
+          
+          if [ $exit_code -ne 0 ]; then
+            echo "ERROR: Package creation failed"
+            echo "$result" | jq '.' || echo "$result"
+            exit 1
+          fi
+          
+          package_version_id=$(echo "$result" | jq -r '.result.SubscriberPackageVersionId')
+          version_number=$(echo "$result" | jq -r '.result.Version')
           
           echo "package_version_id=$package_version_id" >> $GITHUB_OUTPUT
           echo "version_number=$version_number" >> $GITHUB_OUTPUT
           
-          echo "✅ Package Version Created: $package_version_id"
-          echo "📦 Version Number: $version_number"
+          echo "Package Version Created: $package_version_id"
+          echo "Version Number: $version_number"
       
       - name: Promote Package Version
         run: |
-          echo "🚀 Promoting package version ${{ steps.create_version.outputs.package_version_id }}..."
+          echo "Promoting package version ${{ steps.create_version.outputs.package_version_id }}..."
           sf package version promote \
             --package ${{ steps.create_version.outputs.package_version_id }} \
             --no-prompt
-          echo "✅ Package version promoted to released status"
+          echo "Package version promoted to released status"
       
       - name: Create GitHub Release
         uses: actions/create-release@v1
@@ -74,13 +83,13 @@ jobs:
           tag_name: v${{ steps.create_version.outputs.version_number }}
           release_name: Release v${{ steps.create_version.outputs.version_number }}
           body: |
-            ## 📦 Salesforce Package Release
+            ## Salesforce Package Release
             
             **Package Version ID**: `${{ steps.create_version.outputs.package_version_id }}`
             
             **Version**: ${{ steps.create_version.outputs.version_number }}
             
-            ### 🔗 Installation
+            ### Installation
             
             Install this package using:
             ```bash
@@ -92,8 +101,8 @@ jobs:
             https://login.salesforce.com/packaging/installPackage.apexp?p0=${{ steps.create_version.outputs.package_version_id }}
             ```
             
-            ### ✅ Status
-            - Package created and promoted to **Released**
+            ### Status
+            - Package created and promoted to Released
             - Ready for production deployment
           draft: false
           prerelease: false
