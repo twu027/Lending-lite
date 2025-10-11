@@ -70,7 +70,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            let testResults = '✅ PR validation completed!';
+            let testResults = 'PR validation completed!';
             
             try {
               const results = fs.readFileSync('test-results.txt', 'utf8');
@@ -92,9 +92,9 @@ jobs:
                 }
               }
               
-              testResults = `## ✅ PR Validation Passed!\n\n**Scratch Org Tests:**\n- Tests Ran: ${testsRan}\n- Pass Rate: ${passRate}\n- Code Coverage: ${coverage}\n\nAll Apex tests passed successfully in a fresh scratch org! 🎉`;
+              testResults = `## PR Validation Passed\n\n**Scratch Org Tests:**\n- Tests Ran: ${testsRan}\n- Pass Rate: ${passRate}\n- Code Coverage: ${coverage}\n\nAll Apex tests passed successfully in a fresh scratch org.`;
             } catch (error) {
-              testResults = '✅ PR validation completed! Check the workflow logs for details.';
+              testResults = 'PR validation completed! Check the workflow logs for details.';
             }
             
             github.rest.issues.createComment({
