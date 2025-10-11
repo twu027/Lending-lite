@@ -63,16 +63,16 @@ public class ExternalCreditBureauService {
         Integer riskScore = calculateExternalRiskScore(request.loanAmount, request.loanPurpose);
         decision.riskScore = riskScore;
         
-        // External credit bureau decision logic
-        if (riskScore <= 25) {
+        // External credit bureau decision logic (demo-optimized)
+        if (riskScore <= 20) {
             decision.recommendation = 'APPROVE';
-            decision.reasonCode = 'LOW_RISK';
-        } else if (riskScore <= 55) {
+            decision.reasonCode = 'LOW_RISK_AUTO_APPROVED';
+        } else if (riskScore <= 50) {
             decision.recommendation = 'REFER';
             decision.reasonCode = 'MEDIUM_RISK_MANUAL_REVIEW';
         } else {
             decision.recommendation = 'DECLINE';
-            decision.reasonCode = 'HIGH_RISK';
+            decision.reasonCode = 'HIGH_RISK_DECLINED';
         }
         
         // Add some processing time simulation
@@ -83,41 +83,42 @@ public class ExternalCreditBureauService {
     
     /**
      * @description Calculate risk score using external credit bureau algorithms
+     * Demo-optimized for varied outcomes: Approved, Referred, Declined
      * @param loanAmount Requested loan amount
      * @param loanPurpose Purpose of the loan
      * @return Integer risk score (0-100)
      */
     private static Integer calculateExternalRiskScore(Decimal loanAmount, String loanPurpose) {
-        Integer baseScore = 15; // Lower base score for external bureau
+        Integer baseScore = 5; // Lower base score for more approvals
         
-        // Amount-based risk assessment
+        // Amount-based risk assessment (demo-friendly thresholds)
         if (loanAmount != null) {
-            if (loanAmount >= 1000000) {
-                baseScore += 45; 
-            } else if (loanAmount >= 500000) {
-                baseScore += 35; 
-            } else if (loanAmount >= 100000) {
-                baseScore += 20; 
+            if (loanAmount >= 800000) {
+                baseScore += 60; // High amounts = Declined (65+ total)
+            } else if (loanAmount >= 300000) {
+                baseScore += 35; // Medium-high amounts = Referred (40-64 total)
+            } else if (loanAmount >= 50000) {
+                baseScore += 20; // Medium amounts = Referred (25-44 total)  
             } else if (loanAmount >= 25000) {
-                baseScore += 10; 
+                baseScore += 10; // Lower-medium amounts = Approved/Referred
             } else {
-                baseScore += 5; 
+                baseScore += 0;  // Small amounts = Approved (5-24 total)
             }
         }
         
-        // Purpose-based risk assessment (external bureau perspective)
+        // Purpose-based risk assessment (demo-friendly)
         if (String.isNotBlank(loanPurpose)) {
             String purpose = loanPurpose.toLowerCase();
             if (purpose.contains('home')) {
-                baseScore += 5;  
-            } else if (purpose.contains('business')) {
-                baseScore += 15; // Business loans - medium risk
+                baseScore += 0;  // Home loans - lowest risk for demo
             } else if (purpose.contains('personal')) {
-                baseScore += 12; // Personal loans - medium risk
+                baseScore += 8;  // Personal loans - medium risk
+            } else if (purpose.contains('business')) {
+                baseScore += 15; // Business loans - higher risk
             } else if (purpose.contains('unsecured')) {
-                baseScore += 25; // Unsecured - highest risk
+                baseScore += 30; // Unsecured - highest risk (likely declined)
             } else {
-                baseScore += 10; // Default for unknown purposes
+                baseScore += 5;  // Default for unknown purposes
             }
         }
         
