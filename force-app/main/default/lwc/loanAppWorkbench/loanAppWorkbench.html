@@ -1,0 +1,96 @@
+<template>
+    <lightning-card title="Loan Application Workbench" icon-name="custom:custom63">
+        <div slot="actions">
+            <lightning-button
+                label="Refresh"
+                onclick={handleRefresh}
+                variant="neutral"
+                icon-name="utility:refresh">
+            </lightning-button>
+        </div>
+        
+        <div class="slds-p-around_medium">
+            <template if:true={isLoading}>
+                <div class="slds-text-align_center slds-p-around_large">
+                    <lightning-spinner alternative-text="Loading applications..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <template if:false={isLoading}>
+                <template if:true={hasApplications}>
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <template for:each={loanApplications} for:item="application">
+                            <div key={application.id} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">
+                                <div class="slds-box slds-box_small">
+                                    <div class="slds-media">
+                                        <div class="slds-media__figure">
+                                            <lightning-icon icon-name="standard:opportunity" size="medium"></lightning-icon>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <h3 class="slds-text-heading_small slds-m-bottom_xx-small">
+                                                {application.applicantName}
+                                            </h3>
+                                            <p class="slds-text-body_small slds-text-color_weak">
+                                                Application Date: {application.applicationDate}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="slds-m-top_small">
+                                        <div class="slds-grid slds-wrap slds-gutters_xx-small">
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <span class="slds-text-body_small slds-text-color_weak">Loan Amount:</span>
+                                                <p class="slds-text-heading_small">${application.loanAmount}</p>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <span class="slds-text-body_small slds-text-color_weak">Status:</span>
+                                                <p class="slds-text-heading_small">
+                                                    <lightning-badge label={application.status} variant="lightest"></lightning-badge>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="slds-m-top_small">
+                                        <div class="slds-grid slds-gutters_xx-small">
+                                            <div class="slds-col">
+                                                <lightning-button
+                                                    label="View Details"
+                                                    variant="neutral"
+                                                    onclick={handleViewApplication}
+                                                    data-id={application.id}
+                                                    class="slds-size_1-of-1">
+                                                </lightning-button>
+                                            </div>
+                                            <template if:true={application.canSubmit}>
+                                                <div class="slds-col">
+                                                    <lightning-button
+                                                        label="Submit"
+                                                        variant="brand"
+                                                        onclick={handleSubmitApplication}
+                                                        data-id={application.id}
+                                                        class="slds-size_1-of-1">
+                                                    </lightning-button>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <template if:false={hasApplications}>
+                    <div class="slds-text-align_center slds-p-around_large">
+                        <lightning-icon icon-name="custom:custom63" size="large" class="slds-m-bottom_medium"></lightning-icon>
+                        <h3 class="slds-text-heading_medium slds-m-bottom_small">No Loan Applications</h3>
+                        <p class="slds-text-body_regular slds-text-color_weak">
+                            There are currently no loan applications to display.
+                        </p>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>

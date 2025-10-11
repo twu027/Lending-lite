@@ -5,5 +5,8 @@
     "**/.sf": true,
     "**/.sfdx": true
   },
-  "xml.preferences.showSchemaDocumentationType": "none"
+  "xml.preferences.showSchemaDocumentationType": "none",
+  "java.home": "/opt/homebrew/Cellar/openjdk/25/libexec/openjdk.jdk/Contents/Home",
+  "java.jdt.ls.java.home": "/opt/homebrew/Cellar/openjdk/25/libexec/openjdk.jdk/Contents/Home",
+  "salesforcedx-vscode-apex.java.home": "/opt/homebrew/Cellar/openjdk/25/libexec/openjdk.jdk/Contents/Home"
 }
