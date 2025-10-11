@@ -165,12 +165,11 @@ public class ExternalCreditBureauService {
             CreditScoreRest.CreditResponse response = CreditScoreRest.score();
             
         } catch (Exception e) {
-            // In real scenario, would queue for retry
+            // Log and continue - production implementation would queue retry
+            System.debug('Callback failed: ' + e.getMessage());
         }
     }
-
-    // those are the setup for real HTTP callouts using Salesforce technology
-    // depending on the real external system the callback will be implemented differently    
+    
     /**
      * @description Get default callback URL
      * @return String callback URL

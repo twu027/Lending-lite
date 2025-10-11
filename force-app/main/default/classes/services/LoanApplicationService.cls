@@ -37,7 +37,6 @@ public with sharing class LoanApplicationService implements ILoanApplicationServ
         if (!submittedApplications.isEmpty()) {
             processSubmittedApplications(submittedApplications);
         }
-        // only processed the submitted status, other status changes can be handled here if needed
     }
     
     /**
@@ -72,7 +71,6 @@ public with sharing class LoanApplicationService implements ILoanApplicationServ
     private static void processSubmittedApplications(List<Loan_Application__c> submittedApplications) {
         // Publish platform events to trigger credit risk calculation
         publishCreditRiskCalculationEvents(submittedApplications);
-        // future processings can be added here
     }
     
     /**
@@ -99,8 +97,8 @@ public with sharing class LoanApplicationService implements ILoanApplicationServ
             // Log any failures
             for (Integer i = 0; i < results.size(); i++) {
                 if (!results[i].isSuccess()) {
-                    // Could implement proper error handling/logging here
-                    // For now, silently continue processing other events
+                    // Continue processing remaining events in batch
+                    System.debug('Event publish failed for index ' + i + ': ' + results[i].getErrors());
                 }
             }
         }
