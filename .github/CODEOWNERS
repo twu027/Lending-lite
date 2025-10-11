@@ -1,0 +1,10 @@
+# Code Owners for Lending-lite
+# These owners will be automatically requested for review when someone opens a pull request
+
+# Global owner for all files
+* @twu027
+
+# Specific ownership for critical areas
+/.github/ @twu027
+/sfdx-project.json @twu027
+/force-app/main/default/classes/ @twu027
