@@ -8,95 +8,79 @@ private class ServiceFactoryTest {
     
     @IsTest
     static void testGetLoanApplicationService_DefaultImplementation() {
-        Test.startTest();
-        
-        // Reset factory to ensure clean state
+        // Arrange
         ServiceFactory.reset();
         
-        // Get service instance
+        // Act
+        Test.startTest();
         ILoanApplicationService service = ServiceFactory.getLoanApplicationService();
-        
         Test.stopTest();
         
-        // Verify we get a service instance
+        // Assert
         System.assertNotEquals(null, service, 'Service should not be null');
         System.assertEquals(true, service instanceof LoanApplicationService, 'Should return LoanApplicationService implementation');
     }
     
     @IsTest
     static void testGetLoanApplicationService_Singleton() {
-        Test.startTest();
-        
-        // Reset factory to ensure clean state
+        // Arrange
         ServiceFactory.reset();
         
-        // Get service instance twice
+        // Act
+        Test.startTest();
         ILoanApplicationService service1 = ServiceFactory.getLoanApplicationService();
         ILoanApplicationService service2 = ServiceFactory.getLoanApplicationService();
-        
         Test.stopTest();
         
-        // Verify singleton behavior - same instance returned
+        // Assert
         System.assertEquals(service1, service2, 'Factory should return same instance (singleton pattern)');
     }
     
     @IsTest
     static void testSetLoanApplicationService_MockImplementation() {
-        Test.startTest();
-        
-        // Create mock implementation
+        // Arrange
         MockLoanApplicationService mockService = new MockLoanApplicationService();
-        
-        // Set mock implementation
         ServiceFactory.setLoanApplicationService(mockService);
         
-        // Get service instance
+        // Act
+        Test.startTest();
         ILoanApplicationService service = ServiceFactory.getLoanApplicationService();
-        
         Test.stopTest();
         
-        // Verify we get the mock implementation
+        // Assert
         System.assertEquals(mockService, service, 'Factory should return the mock implementation');
         System.assertEquals(true, service instanceof MockLoanApplicationService, 'Should return MockLoanApplicationService');
     }
     
     @IsTest
     static void testReset_ClearsInstance() {
-        Test.startTest();
-        
-        // Get initial service instance
+        // Arrange
         ILoanApplicationService service1 = ServiceFactory.getLoanApplicationService();
         
-        // Reset factory
+        // Act
+        Test.startTest();
         ServiceFactory.reset();
-        
-        // Get service instance again
         ILoanApplicationService service2 = ServiceFactory.getLoanApplicationService();
-        
         Test.stopTest();
         
-        // Verify reset creates new instance
+        // Assert
         System.assertNotEquals(service1, service2, 'Reset should create new instance');
     }
     
     @IsTest
     static void testFactoryWithMockInTriggerContext() {
-        Test.startTest();
-        
-        // Setup mock service
+        // Arrange
         MockLoanApplicationService mockService = new MockLoanApplicationService();
         ServiceFactory.setLoanApplicationService(mockService);
-        
-        // Create test data
         List<Loan_Application__c> loanApps = TestDataFactory.createLoanApplications(2, false);
         
-        // Get service and test methods
+        // Act
+        Test.startTest();
         ILoanApplicationService service = ServiceFactory.getLoanApplicationService();
         service.processNewLoanApplications(loanApps);
-        
         Test.stopTest();
         
-        // Verify mock was called
+        // Assert
         System.assertEquals(1, mockService.newApplicationCallCount, 'Mock service should have been called once');
         System.assertEquals(2, mockService.processedNewApplications.size(), 'Mock should have processed 2 applications');
     }

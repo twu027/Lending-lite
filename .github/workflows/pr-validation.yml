@@ -13,6 +13,9 @@ jobs:
   validate-pr:
     name: Validate PR Changes
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     
     steps:
       - name: Checkout code
@@ -47,12 +50,14 @@ jobs:
           sf project deploy start --source-dir force-app
       
       - name: Run Apex Tests
+        id: apex-tests
         run: |
           sf apex run test \
             --test-level RunLocalTests \
             --code-coverage \
             --result-format human \
-            --wait 10
+            --wait 10 > test-results.txt
+          cat test-results.txt
       
       - name: Delete Scratch Org
         if: always()
@@ -64,9 +69,37 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const fs = require('fs');
+            let testResults = '✅ PR validation completed!';
+            
+            try {
+              const results = fs.readFileSync('test-results.txt', 'utf8');
+              const lines = results.split('\n');
+              
+              let testsRan = 'N/A';
+              let passRate = 'N/A';
+              let coverage = 'N/A';
+              
+              for (const line of lines) {
+                if (line.includes('Tests Ran')) {
+                  testsRan = line.split(/\s+/).filter(s => s).pop();
+                }
+                if (line.includes('Pass Rate')) {
+                  passRate = line.split(/\s+/).filter(s => s).pop();
+                }
+                if (line.includes('Org Wide Coverage')) {
+                  coverage = line.split(/\s+/).filter(s => s).pop();
+                }
+              }
+              
+              testResults = `## ✅ PR Validation Passed!\n\n**Scratch Org Tests:**\n- Tests Ran: ${testsRan}\n- Pass Rate: ${passRate}\n- Code Coverage: ${coverage}\n\nAll Apex tests passed successfully in a fresh scratch org! 🎉`;
+            } catch (error) {
+              testResults = '✅ PR validation completed! Check the workflow logs for details.';
+            }
+            
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '✅ PR validation completed! All tests passed in scratch org.'
-            })
+              body: testResults
+            });
