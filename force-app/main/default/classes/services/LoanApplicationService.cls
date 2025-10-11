@@ -41,10 +41,8 @@ public with sharing class LoanApplicationService implements ILoanApplicationServ
         // Process submitted applications
         if (!submittedApplications.isEmpty()) {
             processSubmittedApplications(submittedApplications);
-            
-            // Create audit trail for submitted applications
-            createAuditTrail(submittedApplications, 'Status Changed to Submitted');
         }
+        // only processed the submitted status, other status changes can be handled here if needed
     }
     
     /**
@@ -70,27 +68,7 @@ public with sharing class LoanApplicationService implements ILoanApplicationServ
         }
     }
     
-    /**
-     * @description Send notifications for new applications
-     * @param loanApplications List of new applications
-     */
-    private static void sendNewApplicationNotifications(List<Loan_Application__c> loanApplications) {
-        // Placeholder for email notification logic
-        // TODO: Implement email notification logic
-        // Example: Send email to loan processing team
-        // Example: Send confirmation email to borrower
-    }
-    
-    /**
-     * @description Create audit trail for loan applications
-     * @param loanApplications List of loan applications
-     * @param action The action being audited
-     */
-    private static void createAuditTrail(List<Loan_Application__c> loanApplications, String action) {
-        // TODO: Implement audit trail creation
-        // Example: Create audit records
-        // Example: Log to external system
-    }
+
     
     /**
      * @description Process submitted loan applications - triggers credit risk calculation
@@ -99,13 +77,7 @@ public with sharing class LoanApplicationService implements ILoanApplicationServ
     private static void processSubmittedApplications(List<Loan_Application__c> submittedApplications) {
         // Publish platform events to trigger credit risk calculation
         publishCreditRiskCalculationEvents(submittedApplications);
-        
-        // Create audit trail
-        createAuditTrail(submittedApplications, 'Submitted for Credit Review');
-        
-        // Status remains 'Submitted' during processing
-        // Will be updated to final decision (Approved/Referred/Declined) by external service callback
-        // No need to update status here - external service will handle final status update
+        // future processings can be added here
     }
     
     /**
