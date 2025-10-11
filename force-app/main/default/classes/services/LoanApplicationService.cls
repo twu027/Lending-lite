@@ -1,5 +1,6 @@
 /**
- * @description Service class for Loan Application business logic
+ * @description Service layer for Loan Application business logic
+ * @version 1.0
  */
 public with sharing class LoanApplicationService implements ILoanApplicationService {
     
