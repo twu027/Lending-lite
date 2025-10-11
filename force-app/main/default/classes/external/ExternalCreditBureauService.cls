@@ -93,25 +93,23 @@ public class ExternalCreditBureauService {
         // Amount-based risk assessment
         if (loanAmount != null) {
             if (loanAmount >= 1000000) {
-                baseScore += 45; // Very high amount
+                baseScore += 45; 
             } else if (loanAmount >= 500000) {
-                baseScore += 35; // High amount
+                baseScore += 35; 
             } else if (loanAmount >= 100000) {
-                baseScore += 20; // Medium amount
+                baseScore += 20; 
             } else if (loanAmount >= 25000) {
-                baseScore += 10; // Low-medium amount
+                baseScore += 10; 
             } else {
-                baseScore += 5;  // Low amount
+                baseScore += 5; 
             }
         }
         
         // Purpose-based risk assessment (external bureau perspective)
         if (String.isNotBlank(loanPurpose)) {
             String purpose = loanPurpose.toLowerCase();
-            if (purpose.contains('home') || purpose.contains('mortgage')) {
-                baseScore += 5;  // Secured by property - lowest risk
-            } else if (purpose.contains('auto') || purpose.contains('car')) {
-                baseScore += 8;  // Secured by vehicle
+            if (purpose.contains('home')) {
+                baseScore += 5;  
             } else if (purpose.contains('business')) {
                 baseScore += 15; // Business loans - medium risk
             } else if (purpose.contains('personal')) {
@@ -150,8 +148,10 @@ public class ExternalCreditBureauService {
             
             String jsonPayload = JSON.serialize(callbackPayload);
             
-            // DEMO MODE: Simulate external callback by directly calling the REST method
+            // Simulate external callback by directly calling the REST method
             // In real implementation, this would be an HTTP POST from external system
+            // because within Salesforce we cannot make callouts to ourselves
+            // So we simulate by setting RestContext and invoking the method directly
             RestResponse mockResponse = new RestResponse();
             RestRequest mockRequest = new RestRequest();
             mockRequest.requestBody = Blob.valueOf(jsonPayload);
@@ -167,9 +167,9 @@ public class ExternalCreditBureauService {
             // In real scenario, would queue for retry
         }
     }
-    
 
-    
+    // those are the setup for real HTTP callouts using Salesforce technology
+    // depending on the real external system the callback will be implemented differently    
     /**
      * @description Get default callback URL
      * @return String callback URL
