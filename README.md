@@ -1,128 +1,77 @@
-# Lending-lite
+# Lending Lite
 
-A Salesforce unlocked package for loan application management with integrated credit risk assessment.
+![Test Coverage](https://img.shields.io/badge/Apex_Coverage-%E2%89%A585%25-brightgreen)
 
 ## Overview
-
-This package provides core functionality for processing loan applications, including credit score evaluation and risk calculation. It uses platform events for asynchronous credit risk processing and integrates with external credit bureau services.
-
-## Package Information
-
-**Latest Version:** 0.3.0.1  
-**Package ID:** 04tNS000000CU7BYAW  
-**Namespace:** None (unlocked package)
-
-## Installation
-
-Install using Salesforce CLI:
-
-```bash
-sf package install --package 04tNS000000CU7BYAW --wait 10 --target-org YOUR_ORG_ALIAS
-```
-
-Or install via browser:
-```
-https://login.salesforce.com/packaging/installPackage.apexp?p0=04tNS000000CU7BYAW
-```
-
-## Features
-
-- Loan application management with custom objects
-- REST API endpoints for credit score retrieval
-- Platform event-based credit risk calculation
-- Integration with external credit bureau services
-- Service layer architecture with dependency injection
-- Comprehensive test coverage (86%)
-
-## Development
-
-### Prerequisites
-
-- Salesforce CLI
-- Dev Hub enabled org
-- Node.js 20+
-
-### Setup
-
-1. Clone the repository
-2. Authenticate to your Dev Hub:
-   ```bash
-   sf org login web --set-default-dev-hub --alias DevHub
-   ```
-
-3. Create a scratch org:
-   ```bash
-   sf org create scratch --definition-file config/project-scratch-def.json --alias lending-scratch --set-default
-   ```
-
-4. Deploy the source:
-   ```bash
-   sf project deploy start
-   ```
-
-5. Run tests:
-   ```bash
-   sf apex run test --test-level RunLocalTests --code-coverage --result-format human
-   ```
-
-### Project Structure
-
-```
-force-app/main/default/
-├── classes/
-│   ├── external/         # External service integrations
-│   ├── handlers/         # Trigger handlers
-│   ├── services/         # Business logic layer
-│   ├── webservices/      # REST API endpoints
-│   └── tests/            # Test classes
-├── objects/
-│   ├── Loan_Application__c/
-│   ├── Party__c/
-│   └── Credit_Risk_Calculation_Request__e/
-└── triggers/
-```
-
-## CI/CD
-
-The project uses GitHub Actions for continuous integration and package releases.
-
-### Workflows
-
-**PR Validation** - Runs on pull requests to main branch:
-- Creates temporary scratch org
-- Deploys metadata
-- Runs all tests with code coverage
-- Posts results as PR comment
-
-**Package Release** - Triggered on version bumps:
-- Creates new package version
-- Promotes to released status
-- Creates GitHub release with installation instructions
-
-### Contributing
-
-1. Create a feature branch from main
-2. Make your changes following the established patterns
-3. Ensure all tests pass locally
-4. Create a pull request
-5. Wait for automated validation to complete
+Lending Lite is a Salesforce-based lending application designed to demonstrate production-grade software engineering practices within the Salesforce platform. The project is built with a strong emphasis on clean architecture, modular design, and CI/CD automation.
 
 ## Architecture
+The system follows a **layered architecture** aligned with Salesforce best practices:
 
-### Service Layer
+```
++--------------------------+
+|        Lightning UI      |  ← LWC (loanAppWorkbench)
++------------+-------------+
+             ↓
++------------+-------------+
+|   Apex Controller Layer  |  ← LoanApplicationController
++------------+-------------+
+             ↓
++------------+-------------+
+|     Trigger Layer        |  ← LoanApplicationTrigger
++------------+-------------+
+             ↓
++------------+-------------+
+|   Handler Layer          |  ← LoanSubmitHandler
++------------+-------------+
+             ↓
++------------+-------------+
+|   Service Layer           |  ← LoanApplicationService, ServiceFactory
++------------+-------------+
+             ↓
++------------+-------------+
+| Integration/Async Layer   |
+|  (REST, Platform Events,  |
+|   Queueables, External    |
+|   Credit Bureau API)      |
++--------------------------+
+```
 
-Uses factory pattern for dependency injection, making the code testable and maintainable. See `ServiceFactory` class for implementation details.
+### Data Flow Summary
+- **Trigger → Handler → Service:** Loan submission events are processed through a decoupled chain promoting reusability and testability.
+- **REST Layer:** Exposes the `CreditScoreRest` API for external integrations.
+- **Platform Events:** Publishes `Credit_Risk_Calculation_Request__e` for async communication.
+- **Queueable Jobs:** Handles background processing and external service calls.
 
-### Testing Strategy
+## Key Features
+- **Unlocked Package Structure** for modular deployment.
+- **Trigger-Handler-Service Pattern** for maintainability.
+- **Dependency Injection via `ServiceFactory`** and `@TestVisible` annotations.
+- **Automated Testing & CI/CD** via GitHub Actions.
+- **Pre-commit Hooks (Husky + Prettier)** for code quality enforcement.
+- **Lightning Web Component (LWC)** for loan application UI.
 
-All test classes follow the AAA (Arrange, Act, Assert) pattern for clarity and consistency. Mock implementations are used for external dependencies.
+## Test Strategy
+Unit tests are implemented for all major classes, leveraging a central `TestDataFactory` for consistency. The project maintains **≥85% Apex coverage** across the namespace.
+
+## CI/CD Pipeline
+The repository includes GitHub Actions workflows for:
+- Pull Request validation (linting, test execution)
+- Automated packaging and deployment
+- Version tagging for releases
+
+## Extensibility
+The solution is designed for easy evolution:
+- New features or UI elements can be added without impacting core logic.
+- Service interfaces promote scalability and testability.
+- Platform Events and Queueables ensure asynchronous extensibility.
+
+## Getting Started
+1. Clone the repository.
+2. Authorize your Salesforce org with the Salesforce CLI.
+3. Deploy the package using `sfdx force:source:deploy` or package install link.
+4. Run tests: `sfdx force:apex:test:run -c -r human -w 10`.
 
 ## License
-
-This is a demo project for educational purposes.
-
-## Resources
-
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+MIT License
 
