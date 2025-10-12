@@ -67,10 +67,26 @@ The solution is designed for easy evolution:
 - Platform Events and Queueables ensure asynchronous extensibility.
 
 ## Getting Started
-1. Clone the repository.
-2. Authorize your Salesforce org with the Salesforce CLI.
-3. Deploy the package using `sfdx force:source:deploy` or package install link.
-4. Run tests: `sfdx force:apex:test:run -c -r human -w 10`.
+1. Clone the repository
+2. Authenticate to your Dev Hub:
+   ```bash
+   sf org login web --set-default-dev-hub --alias DevHub
+   ```
+
+3. Create a scratch org:
+   ```bash
+   sf org create scratch --definition-file config/project-scratch-def.json --alias lending-scratch --set-default
+   ```
+
+4. Deploy the source:
+   ```bash
+   sf project deploy start
+   ```
+
+5. Run tests:
+   ```bash
+   sf apex run test --test-level RunLocalTests --code-coverage --result-format human
+   ```
 
 ## License
 MIT License
