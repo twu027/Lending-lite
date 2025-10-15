@@ -24,7 +24,7 @@
         <allowDelete>true</allowDelete>
         <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
-        <modifyAllRecords>false</modifyAllRecords>
+        <modifyAllRecords>true</modifyAllRecords>
         <object>Loan_Application__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
@@ -33,7 +33,7 @@
         <allowDelete>true</allowDelete>
         <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
-        <modifyAllRecords>false</modifyAllRecords>
+        <modifyAllRecords>true</modifyAllRecords>
         <object>Party__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
