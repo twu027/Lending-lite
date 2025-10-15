@@ -1,12 +1,12 @@
 {
   "packageDirectories": [
     {
-      "versionName": "ver 0.3",
-      "versionNumber": "0.3.0.NEXT",
+      "versionName": "ver 0.4",
+      "versionNumber": "0.4.0.NEXT",
       "path": "force-app",
       "default": true,
       "package": "LendingLite",
-      "versionDescription": "Fix package release workflow - correct version extraction and permissions"
+      "versionDescription": "Complete package experience with Lightning app, tabs, and permission set"
     }
   ],
   "name": "Lending-lite",
